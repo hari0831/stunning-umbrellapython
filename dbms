@@ -1,0 +1,344 @@
+A. Create Schema, insert at least 5 records in each table and add appropriate constraints for the following Library Database using ORACLE or MySQL DBMS under LINUX/Windows environment 
+BOOK (Book_id, Title, Publisher_Name, Pub_Year)  
+BOOK_AUTHORS (Book_id, Author_Name)  
+PUBLISHER (Name, Address, Phone) 
+BOOK_COPIES (Book_id, Branch_id, No-of_Copies) 
+BOOK_LENDING (Book_id, Br_id, Card_No, Date_Out, Due_Date)  
+LIBRARY_BRANCH (Branch_id, Branch_Name, Address) 
+Write SQL queries to 
+1. Retrieve details of all books in the library – id, title, name of publisher, authors, number of copies in each branch, etc. 
+2. Get the particulars of borrowers who have borrowed more than 3 books, but from Jan 2020 to Jun 2022. 
+3. Delete a book in BOOK table. Update the contents of other tables to reflect this data manipulation operation.
+BOOK
+Book_id	Title	Publisher_Name	Pub_Year
+
+BOOK_AUTHORS
+Book_id	Author_Name
+
+PUBLISHER
+Name	Address	Phone
+
+BOOK_COPIES
+Book_id	Branch_id	No_of_copies
+
+BOOK_LENDING
+Book_id	Br_id	Card_no	Date_out	Due_date
+
+LIBRARY_BRANCH
+Branch_id	Branch_Name	Address
+
+
+CREATE TABLE PUBLISHER (
+    Name VARCHAR(100) PRIMARY KEY,
+    Address VARCHAR(200),
+    Phone VARCHAR(20)
+);
+
+CREATE TABLE BOOK (
+    Book_id INT PRIMARY KEY,
+    Title VARCHAR(200),
+    Publisher_Name VARCHAR(100),
+    Pub_Year NUMBER(4),
+    FOREIGN KEY (Publisher_Name) REFERENCES PUBLISHER(Name) on delete CASCADE
+);
+
+CREATE TABLE BOOK_AUTHORS (
+        Book_id INT,
+        Author_Name VARCHAR(100) PRIMARY KEY,
+        FOREIGN KEY (Book_id) REFERENCES BOOK(Book_id) on delete CASCADE
+  );
+
+CREATE TABLE LIBRARY_BRANCH (
+    Branch_id INT PRIMARY KEY,
+    Branch_Name VARCHAR(100),
+    Address VARCHAR(200)
+);
+
+
+CREATE TABLE BOOK_COPIES (
+    Book_id INT,
+    Branch_id INT,
+    No_of_Copies INT,
+    FOREIGN KEY (Book_id) REFERENCES BOOK(Book_id) on delete CASCADE,
+    FOREIGN KEY (Branch_id) REFERENCES LIBRARY_BRANCH(Branch_id) on delete CASCADE
+);
+
+CREATE TABLE BOOK_LENDING (
+    Book_id INT,
+    Br_id INT,
+    Card_No INT PRIMARY KEY,
+    Date_Out DATE,
+    Due_Date DATE,
+    FOREIGN KEY (Book_id) REFERENCES BOOK(Book_id) ON DELETE CASCADE,
+    FOREIGN KEY (Br_id) REFERENCES LIBRARY_BRANCH(Branch_id) ON DELETE CASCADE
+);
+
+INSERT INTO PUBLISHER VALUES ('Neha', 'USA', '1234567890');
+INSERT INTO PUBLISHER VALUES('Hema', 'UK', '9876543210');
+INSERT INTO PUBLISHER VALUES ('Nikita', ' USA', '1112223333');
+INSERT INTO PUBLISHER VALUES ('Preetham', 'Australia', '4445556666');
+INSERT INTO PUBLISHER VALUES ('Vivek', 'Canada', '7778889999');
+
+INSERT INTO BOOK VALUES (1, 'Introduction to Algorithms', 'Neha', 2020);
+INSERT INTO BOOK VALUES (2, 'Database System Concepts', 'Hema', 2019);
+INSERT INTO BOOK VALUES (3, 'Learning Python', 'Nikita', 2021);
+INSERT INTO BOOK VALUES (4, 'Java Programming', 'Preetham', 2022);
+INSERT INTO BOOK VALUES (5, 'AI', 'Vivek', 2023);
+
+INSERT INTO BOOK_AUTHORS VALUES (1, 'Prajwal');
+INSERT INTO BOOK_AUTHORS VALUES (2, 'himesh');
+INSERT INTO BOOK_AUTHORS VALUES (3, 'karanth');
+INSERT INTO BOOK_AUTHORS VALUES (4, 'Kiran'); 
+INSERT INTO BOOK_AUTHORS VALUES (5, 'Bhabitha');
+
+INSERT INTO LIBRARY_BRANCH VALUES (101, 'b1 ' ,'Banashankari');
+INSERT INTO LIBRARY_BRANCH VALUES (102, 'b2 ','whitefield');
+INSERT INTO LIBRARY_BRANCH VALUES (103, 'b3 ','KR_Market');
+INSERT INTO LIBRARY_BRANCH VALUES (104, 'b4 ','BTM_Layout');
+INSERT INTO LIBRARY_BRANCH VALUES (105, 'b5 ','RR_Nagar');
+
+INSERT INTO BOOK_COPIES VALUES (1, 101, 4);
+INSERT INTO BOOK_COPIES VALUES (2, 102, 2);
+INSERT INTO BOOK_COPIES VALUES (3, 103, 5);
+INSERT INTO BOOK_COPIES VALUES (4, 104, 3);
+INSERT INTO BOOK_COPIES VALUES (5, 105, 6);
+
+INSERT INTO BOOK_LENDING VALUES (1, 101, 1001, TO_DATE('2020-02-10', 'YYYY-MM-DD'), TO_DATE('2020-02-25', 'YYYY-MM-DD'));
+INSERT INTO BOOK_LENDING VALUES (2, 102, 1002, TO_DATE('2021-03-15', 'YYYY-MM-DD'), TO_DATE('2021-03-30', 'YYYY-MM-DD'));
+INSERT INTO BOOK_LENDING VALUES (3, 103, 1003, TO_DATE('2022-04-01', 'YYYY-MM-DD'), TO_DATE('2022-04-16', 'YYYY-MM-DD'));
+INSERT INTO BOOK_LENDING VALUES (4, 104, 1004, TO_DATE('2020-06-01', 'YYYY-MM-DD'), TO_DATE('2020-06-16', 'YYYY-MM-DD'));
+INSERT INTO BOOK_LENDING VALUES (5, 105, 1005 ,TO_DATE('2023-01-10', 'YYYY-MM-DD'), TO_DATE('2023-01-25', 'YYYY-MM-DD'));
+
+
+1)	SELECT b.Book_id, b.Title, b.Publisher_Name,  a.Author_Name ,c.No_of_Copies
+FROM BOOK b
+JOIN  BOOK_AUTHORS a ON b.Book_id = a.Book_id
+JOIN BOOK_COPIES c ON b.Book_id = c.Book_id;
+2)	SELECT     Card_No, COUNT(*) AS Total_Borrowed
+FROM       BOOK_LENDING
+WHERE      Date_Out BETWEEN TO_DATE('2020-01-01', 'YYYY-MM-DD') AND TO_DATE('2022-06-30', 'YYYY-MM-DD')
+GROUP BY   Card_No
+HAVING     COUNT(*) > 3;
+3)	DELETE FROM BOOK_LENDING WHERE Book_id = 3;
+DELETE FROM BOOK_COPIES WHERE Book_id = 3;
+DELETE FROM BOOK_AUTHORS WHERE Book_id = 3;
+DELETE FROM BOOK WHERE Book_id = 3;
+
+
+	Select * from Table_name  -to display the table values
+	Desc Table_name - to print table
+
+B. Create Schema, insert at least 5 records for each table and add appropriate constraints for the following Order Database using ORACLE or MySQL DBMS under LINUX/Windows environment. 
+SALESMAN (Salesman_id, Name, City, Commission)  
+CUSTOMER (C_id, Cust_Name, City, Grade, Salesman_id)  
+ORDERS (Ord_No, Purchase_Amt, Ord_Date, C_id, S_id) 
+Write SQL queries to 
+1. Count the customers with grades above Bangalore’s average. 
+2. Find the name and numbers of all salesman who had more than one customer. 
+3. List all the salesman and indicate those who have and don’t have customers in their cities (Use UNION operation.) 
+4. Create a view that finds the salesman who has the customer with the highest order.
+
+
+SALESMAN
+Salesman_id	Name	City	Commission
+
+CUSTOMERS
+C_id	Cust_Name	City	Grade	Salesman_id
+
+ORDERS
+Ord_No	Purchase_amt	Ord_date	C_id	S_id
+
+
+CREATE TABLE SALESMAN (
+    Salesman_id INT PRIMARY KEY,
+    Name VARCHAR(100),
+    City VARCHAR(100),
+    Commission DECIMAL(5,2)
+);
+
+CREATE TABLE CUSTOMER (
+    C_id INT PRIMARY KEY,
+    Cust_Name VARCHAR(100),
+    City VARCHAR(100),
+    Grade INT,
+    Salesman_id INT,
+    FOREIGN KEY (Salesman_id) REFERENCES SALESMAN(Salesman_id) on delete CASCADE
+);
+
+CREATE TABLE ORDERS (
+    Ord_No INT PRIMARY KEY,
+    Purchase_Amt DECIMAL(10,2),
+    Ord_Date DATE,
+    C_id INT,
+    S_id INT,
+    FOREIGN KEY (C_id) REFERENCES CUSTOMER(C_id) on delete CASCADE,
+    FOREIGN KEY (S_id) REFERENCES SALESMAN(Salesman_id) on delete CASCADE
+);
+
+INSERT INTO SALESMAN VALUES (5001, 'James', 'New York', 0.15);
+INSERT INTO SALESMAN VALUES (5002, 'Linda', 'Bangalore', 0.13);
+INSERT INTO SALESMAN VALUES (5003, 'Robert', 'Chicago', 0.12);
+INSERT INTO SALESMAN VALUES (5004, 'Sophia', 'Delhi', 0.14);
+INSERT INTO SALESMAN VALUES (5005, 'Michael', 'Bangalore', 0.16);
+
+INSERT INTO CUSTOMER VALUES (3001, 'Alice', 'New York', 200, 5001);
+INSERT INTO CUSTOMER VALUES (3002, 'Bob', 'Chicago', 100, 5003);
+INSERT INTO CUSTOMER VALUES (3003, 'Charlie', 'Bangalore', 300, 5002);
+INSERT INTO CUSTOMER VALUES (3004, 'David', 'Delhi', 250, 5004);
+INSERT INTO CUSTOMER VALUES (3005, 'Eve', 'Bangalore', 150, 5005);
+
+INSERT INTO ORDERS VALUES (7001, 1500.00, TO_DATE('2022-01-15', 'YYYY-MM-DD'), 3001, 5001);
+INSERT INTO ORDERS VALUES (7002, 2000.00, TO_DATE('2022-03-10', 'YYYY-MM-DD'), 3002, 5003);
+INSERT INTO ORDERS VALUES (7003, 4000.00, TO_DATE('2022-05-25', 'YYYY-MM-DD'), 3003, 5002);
+INSERT INTO ORDERS VALUES (7004, 3200.00, TO_DATE('2022-07-20', 'YYYY-MM-DD'), 3004, 5004);
+INSERT INTO ORDERS VALUES (7005, 4500.00, TO_DATE('2022-09-05', 'YYYY-MM-DD'), 3005, 5005);
+
+
+
+1)	SELECT COUNT(*) AS Count_Customers
+FROM CUSTOMER
+WHERE Grade > (
+    SELECT AVG(Grade)
+    FROM CUSTOMER
+    WHERE City = 'Bangalore'
+);
+2)	SELECT s.Name, s.Salesman_id
+FROM SALESMAN s
+JOIN CUSTOMER c ON s.Salesman_id = c.Salesman_id
+GROUP BY s.Salesman_id, s.Name
+HAVING COUNT(c.C_id) > 1;
+3)	SELECT s.Salesman_id, s.Name,s.City, 'Has Customer in City' AS Status
+FROM SALESMAN s
+WHERE EXISTS(
+	SELECT 1
+	FROM CUSTOMER c
+	WHERE c.Salesman_id =s.Salesman_id AND c.City=s.City)
+UNION
+
+SELECT s.Salesman_id, s.Name, s.City,'No Customer in City' AS Status
+FROM SALESMAN s
+WHERE NOT EXISTS(
+	SELECT 1
+	FROM CUSTOMER c
+	WHERE c.Salesman_id =s.Salesman_id AND c.City=s.City
+);
+4)	CREATE VIEW Top_Salesman AS
+SELECT s.Salesman_id, s.Name, o.Purchase_Amt,o.Ord_no
+FROM ORDERS o
+JOIN SALESMAN s ON o.S_id = s.Salesman_id
+WHERE o.Purchase_Amt = (
+    SELECT MAX(Purchase_Amt) FROM ORDERS
+);
+
+
+C) Create Schema, insert at least 5 records for each table and add appropriate constraints for the following Company Database using ORACLE or MySQL DBMS under LINUX/Windows environment. 
+EMPLOYEE (SSN, Name, Address, Sex, Salary, Super SSN, D No) 
+ DEPARTMENT (D No, D Name, Mgr. SSN, Mgr. Start Date) 
+DLOCATION(D No,D Loc) 
+PROJECT (P No, P Name, P Location, D_No)  
+WORKS_ON(SSN, P No, Hours) 
+Write SQL queries to 
+1. Make a list of all project numbers for projects that involve an employee whose last name is ‘Scott’, either as a worker or as a manager of the department that controls the project. 
+2. Show the resulting salaries if every employee working on the ‘IoT’ project is given a 10 percent raise.  
+3. Find the sum of the salaries of all employees of the ‘Accounts’ department, as well as the maximum salary and the average salary in this department.
+
+ 
+
+CREATE TABLE DEPARTMENT (
+    D_No INT PRIMARY KEY,
+    D_Name VARCHAR(50),
+    Mgr_SSN CHAR(9),
+    Mgr_Start_Date DATE
+);
+
+
+
+CREATE TABLE EMPLOYEE (
+    SSN CHAR(9) PRIMARY KEY,
+    Name VARCHAR(100),
+    Address VARCHAR(100),
+    Sex CHAR(1),
+    Salary DECIMAL(10,2),
+    Super_SSN CHAR(9),
+    D_No INT,
+    FOREIGN KEY (Super_SSN) REFERENCES EMPLOYEE(SSN) on Delete CASCADE,
+    FOREIGN KEY (D_No) REFERENCES DEPARTMENT(D_No) on Delete CASCADE
+);
+
+CREATE TABLE DLOCATION (
+    D_No INT,
+    D_Loc VARCHAR(50),
+    FOREIGN KEY (D_No) REFERENCES DEPARTMENT(D_No) on Delete CASCADE
+);
+
+CREATE TABLE PROJECT (
+    P_No INT PRIMARY KEY,
+    P_Name VARCHAR(100),
+    P_Location VARCHAR(100),
+    D_No INT,
+    FOREIGN KEY (D_No) REFERENCES DEPARTMENT(D_No) on Delete CASCADE
+);
+
+CREATE TABLE WORKS_ON (
+    SSN CHAR(9),
+    P_No INT,
+    Hours DECIMAL(5,2),
+    PRIMARY KEY (SSN, P_No),
+    FOREIGN KEY (SSN) REFERENCES EMPLOYEE(SSN),
+    FOREIGN KEY (P_No) REFERENCES PROJECT(P_No) on Delete CASCADE
+);
+INSERT INTO DEPARTMENT VALUES (1, 'Accounts', '123456789', TO_DATE('2020-01-01', 'YYYY-MM-DD'));
+INSERT INTO DEPARTMENT VALUES (2, 'IT', '987654321', TO_DATE('2019-06-01', 'YYYY-MM-DD'));
+INSERT INTO DEPARTMENT VALUES (3, 'HR', '555667777', TO_DATE('2021-03-15', 'YYYY-MM-DD'));
+
+INSERT INTO EMPLOYEE VALUES ('123456789', 'John Scott', 'New York', 'M', 70000, NULL, 1);
+INSERT INTO EMPLOYEE VALUES ('987654321', 'Alice Brown', 'Chicago', 'F', 80000, '123456789', 2);
+INSERT INTO EMPLOYEE VALUES ('555667777', 'Michael Green', 'Los Angeles', 'M', 65000, '123456789', 3);
+INSERT INTO EMPLOYEE VALUES ('222333444', 'Linda Scott', 'Boston', 'F', 75000, '987654321', 2);
+INSERT INTO EMPLOYEE VALUES ('999888777', 'Robert King', 'Seattle', 'M', 60000, '987654321', 1);
+
+INSERT INTO DLOCATION VALUES (1, 'New York');
+INSERT INTO DLOCATION VALUES (2, 'Chicago');
+INSERT INTO DLOCATION VALUES (3, 'Los Angeles');
+INSERT INTO DLOCATION VALUES (1, 'Boston');
+INSERT INTO DLOCATION VALUES (2, 'Houston');
+
+
+INSERT INTO PROJECT VALUES (101, 'AI System', 'New York', 2);
+INSERT INTO PROJECT VALUES (102, 'Payroll', 'Chicago', 1);
+INSERT INTO PROJECT VALUES (103, 'Recruitment', 'Los Angeles', 3);
+INSERT INTO PROJECT VALUES (104, 'IoT', 'Houston', 2);
+INSERT INTO PROJECT VALUES (105, 'Audit', 'Boston', 1);
+
+INSERT INTO WORKS_ON VALUES ('123456789', 102, 10);
+INSERT INTO WORKS_ON VALUES ('987654321', 101, 12);
+INSERT INTO WORKS_ON VALUES ('555667777', 103, 15);
+INSERT INTO WORKS_ON VALUES ('222333444', 104, 20);
+INSERT INTO WORKS_ON VALUES ('999888777', 105, 8);
+
+1)	SELECT DISTINCT p.P_No
+FROM PROJECT p
+JOIN WORKS_ON w ON p.p_No = w.p_No
+JOIN EMPLOYEE e ON w.SSN = e.SSN
+WHERE e.Name LIKE '%Scott%'
+
+UNION
+
+SELECT DISTINCT p.P_No
+FROM PROJECT p 
+JOIN DEPARTMENT d ON p.D_No=d.D_no
+JOIN EMPLOYEE e1 ON d.Mgr_SSN = e1.SSN
+WHERE e1.Name LIKE '%Scott%';
+2)	SELECT e.Name, e.Salary, 
+       (e.Salary * 1.10) AS New_Salary
+FROM EMPLOYEE e
+JOIN WORKS_ON w ON e.SSN = w.SSN
+JOIN PROJECT p ON w.P_No = p.P_No
+WHERE p.P_Name = 'IoT';
+3)	SELECT 
+    SUM(e.Salary) AS Total_Salary,
+    MAX(e.Salary) AS Max_Salary,
+    AVG(e.Salary) AS Avg_Salary
+FROM EMPLOYEE e
+JOIN DEPARTMENT d ON e.D_No = d.D_No
+WHERE d.D_Name = 'Accounts';
